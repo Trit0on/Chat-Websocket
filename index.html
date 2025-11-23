@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body class="container-fluid p-5">
+    <div class="row">
+                <div class="col-md-12" style="height: 80vh;">
+            <div id="chatbox" class="w-100 bg-dark h-100 bg-opacity-10 rounded-4 p-2"></div>
+
+
+        </div>
+        <div class="row justify-content-center p-2">
+            <div class="col-md-3">
+            <input type="text" name="pseudo" id="pseudo" placeholder="Enter your pseudo" class="form-control mb-2 rounded-pill">
+            <input type="text" name="message" id="message" placeholder="Enter your message" class="form-control mb-2 rounded-pill">
+            </div>
+            <button type="submit" class="btn-primary btn rounded-pill" onclick="send()">Envoyer un message</button>
+
+        </div>
+
+
+
+    </div>
+
+
+</body>
+
+<script>
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onmessage = ({ data }) => {
+        const msg = JSON.parse(data);
+        document.getElementById("chatbox").innerHTML += `<div class
+        ="p-2 rounded-3 bg-dark bg-opacity-10 m-2"><div class="text-primary fw-bold">${msg.pseudo}</div><div class="text-dark">${msg.message}</div></div>`;
+    }
+
+    function send() {
+        pseudo = document.getElementById("pseudo").value;
+        message = document.getElementById("message").value;
+
+        ws.send(JSON.stringify({ pseudo, message }));
+    }
+</script>
+
+</html>
