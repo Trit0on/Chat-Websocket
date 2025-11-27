@@ -5,13 +5,11 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch & npx http-server -p 3000 -o login.html",
-    "watch": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc --watch & npx http-server -p 3000 -o login.html"
   },
   "author": "",
   "license": "ISC",
-  "description": "Chat WebSocket avec architecture TypeScript propre",
+  "description": "Frontend de test pour WebSocket avec authentification JWT",
   "dependencies": {
     "bootstrap": "^5.3.8"
   },

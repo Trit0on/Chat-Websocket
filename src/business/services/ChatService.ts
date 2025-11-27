@@ -1,8 +1,9 @@
-import { Message } from '../models/Message';
-import { User } from '../models/User';
-import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto';
-import { LoginDto } from '../dtos/AuthDto';
-import { WebSocketService } from './WebSocketService';
+import { Message } from '../models/Message.js';
+import { User } from '../models/User.js';
+import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto.js';
+import { LoginDto } from '../dtos/AuthDto.js';
+import { WebSocketService } from './WebSocketService.js';
+import { MessageMapper } from '../mappers/MessageMapper.js';
 
 /**
  * Chat Service
@@ -127,7 +128,7 @@ export class ChatService {
      */
     private setupWebSocketListeners(): void {
         this.webSocketService.onMessage((messageDto: MessageResponseDto) => {
-            const message = this.convertDtoToMessage(messageDto);
+            const message = MessageMapper.toModel(messageDto);
             this.messages.push(message);
 
             if (this.onNewMessageCallback) {
@@ -152,19 +153,6 @@ export class ChatService {
                 this.onErrorCallback(error);
             }
         });
-    }
-
-    /**
-     * Convertit un DTO en modèle Message
-     */
-    private convertDtoToMessage(dto: MessageResponseDto): Message {
-        return new Message(
-            dto.id,
-            dto.pseudo,
-            dto.message,
-            dto.timestamp ? new Date(dto.timestamp) : new Date(),
-            dto.userId
-        );
     }
 
     /**

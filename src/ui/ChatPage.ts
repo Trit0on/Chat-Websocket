@@ -1,5 +1,5 @@
-import { ChatService } from '../business/services/ChatService';
-import { Message } from '../business/models/Message';
+import { ChatService } from '../business/services/ChatService.js';
+import { Message } from '../business/models/Message.js';
 
 /**
  * Chat Page

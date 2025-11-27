@@ -1,7 +1,7 @@
-import { ChatService } from './business/services/ChatService';
-import { AuthPage } from './ui/AuthPage';
-import { ChatPage } from './ui/ChatPage';
-import { config } from './config';
+import { ChatService } from './business/services/ChatService.js';
+import { AuthPage } from './ui/AuthPage.js';
+import { ChatPage } from './ui/ChatPage.js';
+import { config } from './config.js';
 
 /**
  * Point d'entrée de l'application

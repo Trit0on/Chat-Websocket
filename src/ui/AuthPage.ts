@@ -1,4 +1,4 @@
-import { ChatService } from '../business/services/ChatService';
+import { ChatService } from '../business/services/ChatService.js';
 
 /**
  * Auth Page

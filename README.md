@@ -1,160 +1,65 @@
-# Chat WebSocket - Frontend TypeScript
+# Chat WebSocket - Frontend de Test
 
-## Architecture du Projet
+Frontend TypeScript minimal pour tester l'authentification WebSocket avec JWT.
 
-Ce projet frontend est structuré de manière professionnelle pour faciliter l'intégration avec votre backend .NET.
-
-### Structure des Dossiers
+## Structure
 
 ```
 src/
 ├── business/
-│   ├── models/          # Modèles métier (Message, User)
-│   ├── dtos/           # Data Transfer Objects (pour la communication avec le backend)
-│   └── services/       # Services métier (ChatService, WebSocketService)
-└── ui/                 # Composants d'interface utilisateur
-    ├── AuthPage.ts     # Page de connexion avec AccessToken
-    └── ChatPage.ts     # Interface de chat
+│   ├── dtos/           # Data Transfer Objects
+│   ├── mappers/        # Conversion DTO <-> Model
+│   ├── models/         # Modèles métier
+│   └── services/       # Services (ChatService, WebSocketService)
+├── ui/                 # Composants UI
+├── config.ts           # Configuration serveur
+└── main.ts             # Point d'entrée
 ```
 
-## Installation
+## Installation & Lancement
 
 ```bash
 npm install
+npm run build
+# Ouvrir login.html dans le navigateur
 ```
 
-## Compilation TypeScript
-
+Pour le développement avec auto-compilation :
 ```bash
-# Compilation unique
-npm run build
-
-# Compilation en mode watch (développement)
-npm run watch
+npm run dev
 ```
 
 ## Configuration
 
-### URL du Serveur WebSocket
-
-Dans `src/main.ts`, modifiez la constante `WS_SERVER_URL` pour pointer vers votre backend .NET :
+Modifier l'URL du serveur WebSocket dans `src/config.ts` :
 
 ```typescript
-const WS_SERVER_URL = 'ws://localhost:5000/chat'; // Votre URL backend
+export const config = {
+    wsServerUrl: 'ws://localhost:5290'
+};
 ```
 
 ## Utilisation
 
-1. Ouvrez `login.html` dans votre navigateur
-2. Entrez votre pseudo et votre AccessToken
-3. Le token sera automatiquement envoyé en paramètre dans la connexion WebSocket
-4. Une fois connecté, vous accédez à l'interface de chat
+1. Ouvrir `login.html`
+2. Entrer un pseudo et le JWT token
+3. Le token est envoyé via l'URL WebSocket (`?token=...`) et dans le message de login
 
-## Intégration avec votre Backend .NET
+## Format des Messages
 
-### Format des Messages
-
-Le frontend envoie et attend des messages au format JSON :
-
-#### Connexion (Login)
+### Connexion
 ```json
-{
-  "type": "login",
-  "pseudo": "NomUtilisateur",
-  "accessToken": "votre_token_ici"
-}
+{ "type": "login", "pseudo": "...", "accessToken": "..." }
 ```
 
-#### Envoi de Message
+### Envoi de message
 ```json
-{
-  "type": "message",
-  "pseudo": "NomUtilisateur",
-  "message": "Contenu du message"
-}
+{ "type": "message", "pseudo": "...", "message": "..." }
 ```
 
-#### Réception de Message
+### Réception
 ```json
-{
-  "id": "message_id",
-  "pseudo": "NomUtilisateur",
-  "message": "Contenu du message",
-  "timestamp": "2025-11-27T10:30:00Z",
-  "userId": "user_id",
-  "type": "message"
-}
+{ "id": "...", "pseudo": "...", "message": "...", "timestamp": "...", "type": "message" }
 ```
 
-## Ajout de vos DTOs et Modèles .NET
-
-### Pour ajouter un nouveau DTO :
-
-1. Créez un fichier dans `src/business/dtos/` :
-```typescript
-// src/business/dtos/VotreDto.ts
-export interface VotreDto {
-    propriete1: string;
-    propriete2: number;
-    // Correspond à vos DTOs .NET
-}
-```
-
-### Pour ajouter un nouveau Modèle :
-
-1. Créez un fichier dans `src/business/models/` :
-```typescript
-// src/business/models/VotreModele.ts
-export class VotreModele {
-    constructor(
-        public propriete1: string,
-        public propriete2: number
-    ) {}
-}
-```
-
-### Pour modifier le service :
-
-Le `ChatService` et le `WebSocketService` peuvent être étendus pour supporter vos nouveaux DTOs et endpoints.
-
-## Authentification Bearer Token
-
-Le token est envoyé de deux manières :
-
-1. **Dans l'URL WebSocket** : `ws://votre-serveur/chat?token=VOTRE_TOKEN`
-2. **Dans le premier message** : Un message de type "login" avec le token
-
-Vous pouvez adapter cela dans `src/business/services/WebSocketService.ts` selon les besoins de votre backend .NET.
-
-## Fonctionnalités
-
-- ✅ Authentification par AccessToken
-- ✅ Architecture TypeScript propre et modulaire
-- ✅ Séparation Models / DTOs / Services
-- ✅ Reconnexion automatique
-- ✅ Interface responsive Bootstrap
-- ✅ Gestion des erreurs
-- ✅ Messages horodatés
-- ✅ Distinction messages propres/autres utilisateurs
-
-## Personnalisation
-
-### Changer le style
-Modifiez `styles.css` pour personnaliser l'apparence.
-
-### Ajouter des fonctionnalités
-- Étendez `ChatService` pour ajouter de la logique métier
-- Créez de nouveaux DTOs dans `business/dtos/`
-- Ajoutez des modèles dans `business/models/`
-
-## Développement
-
-Le code est conçu pour être facilement maintenable et extensible. Chaque composant a une responsabilité unique :
-
-- **Models** : Représentation métier des données
-- **DTOs** : Format de communication avec le backend
-- **Services** : Logique métier et communication
-- **UI** : Composants d'interface purs
-
-Cette séparation facilite les tests et l'évolution du code.
 

@@ -1,5 +1,5 @@
-import { MessageDto, MessageResponseDto, SendMessageDto } from '../dtos/MessageDto';
-import { LoginDto, LoginResponseDto } from '../dtos/AuthDto';
+import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto.js';
+import { LoginDto } from '../dtos/AuthDto.js';
 
 /**
  * WebSocket Service
