@@ -14,7 +14,7 @@ class App {
 
     constructor() {
         // Configuration du serveur WebSocket depuis config.ts
-        console.log(`🔌 WebSocket: ${config.wsServerUrl}`);
+        console.log(`🔌 WebSocket: ${config.serverUrl}`);
 
         this.container = document.getElementById('app') as HTMLElement;
 
@@ -22,7 +22,7 @@ class App {
             throw new Error('Element #app non trouvé dans le DOM');
         }
 
-        this.chatService = new ChatService(config.wsServerUrl);
+        this.chatService = new ChatService(config.serverUrl);
         this.authPage = new AuthPage(this.chatService, this.container);
         this.chatPage = new ChatPage(this.chatService, this.container);
 

@@ -29,19 +29,13 @@ export class WebSocketService {
                 this.accessToken = loginDto.accessToken;
 
                 // Ajout du token dans l'URL ou les headers (selon votre backend .NET)
-                const url = `${this.serverUrl}?token=${encodeURIComponent(loginDto.accessToken)}`;
+                const url = `${this.serverUrl}/messaging-hub?token=${encodeURIComponent(loginDto.accessToken)}`;
                 this.ws = new WebSocket(url);
 
                 this.ws.onopen = () => {
                     console.log('WebSocket connecté');
                     this.reconnectAttempts = 0;
 
-                    // Envoie les informations de login
-                    this.send({
-                        type: 'login',
-                        pseudo: loginDto.pseudo,
-                        accessToken: loginDto.accessToken
-                    });
 
                     if (this.onConnectedCallback) {
                         this.onConnectedCallback();
@@ -62,12 +56,16 @@ export class WebSocketService {
                     reject(new Error(errorMsg));
                 };
 
-                this.ws.onclose = () => {
-                    console.log('WebSocket déconnecté');
+                this.ws.onclose = (event) => {
+                    console.log('WebSocket déconnecté', event.code, event.reason);
                     if (this.onDisconnectedCallback) {
                         this.onDisconnectedCallback();
                     }
-                    this.attemptReconnect(loginDto);
+
+                    // Ne pas reconnecter si c'est une fermeture normale ou manuelle
+                    if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
+                        this.attemptReconnect(loginDto);
+                    }
                 };
 
             } catch (error) {
@@ -97,11 +95,10 @@ export class WebSocketService {
      */
     public disconnect(): void {
         if (this.ws) {
-            this.ws.close();
+            this.ws.close(1000, 'Client disconnect'); // Code 1000 = fermeture normale
             this.ws = null;
         }
         this.accessToken = null;
-        this.reconnectAttempts = this.maxReconnectAttempts; // Empêche la reconnexion
     }
 
     /**
@@ -144,6 +141,9 @@ export class WebSocketService {
      */
     private handleMessage(data: string): void {
         try {
+            console.log('Message reçu (brut):', data);
+
+            // Essayer de parser le JSON
             const message: MessageResponseDto = JSON.parse(data);
 
             if (this.onMessageCallback) {
@@ -151,6 +151,8 @@ export class WebSocketService {
             }
         } catch (error) {
             console.error('Erreur lors du parsing du message:', error);
+            console.error('Données reçues:', data);
+            console.error('Type de données:', typeof data);
         }
     }
 
