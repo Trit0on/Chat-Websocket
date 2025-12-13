@@ -1,12 +1,15 @@
-// Export all models
-export { WebSocketService } from './services/WebSocketService';
-export { ChatService } from './services/ChatService';
 // Export all services
+export { WebSocketService } from './services/WebSocketService.js';
+export { ChatService } from './services/ChatService.js';
 
-export * from './dtos/AuthDto';
-export * from './dtos/MessageDto';
 // Export all DTOs
+export * from './dtos/AuthDto.js';
+export * from './dtos/MessageDto.js';
 
-export { User } from './models/User';
-export { Message } from './models/Message';
+// Export all models
+export { Message } from './models/Message.js';
 
+// Export all mappers
+export { MessageMapper } from './mappers/MessageMapper.js';
+
+export { AuthService } from './services/AuthService.js';

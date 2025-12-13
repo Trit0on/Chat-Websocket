@@ -1,7 +1,7 @@
-import { ChatService } from './business/services/ChatService';
-import { AuthPage } from './ui/AuthPage';
-import { ChatPage } from './ui/ChatPage';
-import { config } from './config';
+import { ChatService } from './business/services/ChatService.js';
+import { AuthPage } from './ui/AuthPage.js';
+import { ChatPage } from './ui/ChatPage.js';
+import { config } from './config.js';
 
 /**
  * Point d'entrée de l'application
@@ -14,7 +14,7 @@ class App {
 
     constructor() {
         // Configuration du serveur WebSocket depuis config.ts
-        console.log(`🔌 WebSocket: ${config.wsServerUrl}`);
+        console.log(`🔌 WebSocket: ${config.serverUrl}`);
 
         this.container = document.getElementById('app') as HTMLElement;
 
@@ -22,7 +22,7 @@ class App {
             throw new Error('Element #app non trouvé dans le DOM');
         }
 
-        this.chatService = new ChatService(config.wsServerUrl);
+        this.chatService = new ChatService(config.serverUrl);
         this.authPage = new AuthPage(this.chatService, this.container);
         this.chatPage = new ChatPage(this.chatService, this.container);
 

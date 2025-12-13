@@ -1,4 +1,4 @@
-import { ChatService } from '../business/services/ChatService';
+import { ChatService, AuthService } from '../business';
 
 /**
  * Auth Page
@@ -6,11 +6,13 @@ import { ChatService } from '../business/services/ChatService';
  */
 export class AuthPage {
     private chatService: ChatService;
+    private authService: AuthService;
     private container: HTMLElement;
 
     constructor(chatService: ChatService, container: HTMLElement) {
         this.chatService = chatService;
         this.container = container;
+        this.authService = new AuthService();
     }
 
     /**
@@ -23,31 +25,20 @@ export class AuthPage {
                     <div class="card shadow-lg">
                         <div class="card-body p-5">
                             <h2 class="text-center mb-4">Chat WebSocket</h2>
-                            <p class="text-center text-muted mb-4">Connectez-vous avec votre AccessToken</p>
+                            <p class="text-center text-muted mb-4">Connectez-vous avec votre Access Token</p>
                             
                             <form id="loginForm">
-                                <div class="mb-3">
-                                    <label for="pseudoInput" class="form-label">Pseudo</label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="pseudoInput" 
-                                        placeholder="Entrez votre pseudo"
-                                        required
-                                    >
-                                </div>
-                                
                                 <div class="mb-4">
-                                    <label for="tokenInput" class="form-label">Access Token</label>
+                                    <label for="tokenInput" class="form-label">Access Token (JWT)</label>
                                     <textarea 
                                         class="form-control" 
                                         id="tokenInput" 
-                                        rows="3"
-                                        placeholder="Collez votre token d'accès ici"
+                                        rows="4"
+                                        placeholder="Collez votre token JWT ici"
                                         required
                                     ></textarea>
                                     <small class="form-text text-muted">
-                                        Le token sera envoyé en Bearer dans la requête WebSocket
+                                        Le token sera utilisé pour obtenir un ticket WebSocket sécurisé
                                     </small>
                                 </div>
                                 
@@ -75,7 +66,6 @@ export class AuthPage {
      */
     private attachEventListeners(): void {
         const form = document.getElementById('loginForm') as HTMLFormElement;
-        const pseudoInput = document.getElementById('pseudoInput') as HTMLInputElement;
         const tokenInput = document.getElementById('tokenInput') as HTMLTextAreaElement;
         const loginButton = document.getElementById('loginButton') as HTMLButtonElement;
         const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
@@ -83,11 +73,10 @@ export class AuthPage {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const pseudo = pseudoInput.value.trim();
             const token = tokenInput.value.trim();
 
-            if (!pseudo || !token) {
-                this.showError('Veuillez remplir tous les champs');
+            if (!token) {
+                this.showError('Veuillez remplir le token d\'accès');
                 return;
             }
 
@@ -96,9 +85,13 @@ export class AuthPage {
                 loginButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connexion...';
                 errorMessage.classList.add('d-none');
 
-                await this.chatService.login(token, pseudo);
+                await this.chatService.login(token);
 
-                // La connexion réussie sera gérée par le callback dans main.ts
+                // 1. Stocker le token dans localStorage
+                this.authService.saveToken(token);
+
+                // 2. Tenter la connexion WebSocket
+                loginButton.textContent = 'Se connecter';
             } catch (error) {
                 this.showError(error instanceof Error ? error.message : 'Erreur de connexion');
                 loginButton.disabled = false;

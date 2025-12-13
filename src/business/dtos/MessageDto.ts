@@ -11,10 +11,9 @@ export interface MessageDto {
 }
 
 /**
- * DTO pour l'envoi d'un message
+ * DTO pour l'envoi d'un message (pattern WebSocket basique)
  */
 export interface SendMessageDto {
-    pseudo: string;
     message: string;
 }
 

@@ -1,8 +1,7 @@
-import { Message } from '../models/Message';
-import { User } from '../models/User';
-import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto';
-import { LoginDto } from '../dtos/AuthDto';
-import { WebSocketService } from './WebSocketService';
+import { Message } from '../models/Message.js';
+import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto.js';
+import { WebSocketService } from './WebSocketService.js';
+import { MessageMapper } from '../mappers';
 
 /**
  * Chat Service
@@ -10,7 +9,6 @@ import { WebSocketService } from './WebSocketService';
  */
 export class ChatService {
     private webSocketService: WebSocketService;
-    private currentUser: User | null = null;
     private messages: Message[] = [];
 
     // Callbacks pour l'UI
@@ -26,19 +24,14 @@ export class ChatService {
     /**
      * Connecte l'utilisateur au chat
      */
-    public async login(accessToken: string, pseudo: string): Promise<void> {
+    public async login(accessToken: string): Promise<void> {
         try {
-            const loginDto: LoginDto = {
-                accessToken,
-                pseudo
-            };
 
             await this.webSocketService.connect(loginDto);
 
-            // Crée l'utilisateur actuel
             this.currentUser = new User(
                 this.generateUserId(),
-                pseudo,
+                'User', // Pseudo par défaut, l'identité réelle est dans le JWT
                 accessToken
             );
 
@@ -64,7 +57,6 @@ export class ChatService {
         }
 
         const messageDto: SendMessageDto = {
-            pseudo: this.currentUser.pseudo,
             message: content
         };
 
@@ -127,7 +119,7 @@ export class ChatService {
      */
     private setupWebSocketListeners(): void {
         this.webSocketService.onMessage((messageDto: MessageResponseDto) => {
-            const message = this.convertDtoToMessage(messageDto);
+            const message = MessageMapper.toModel(messageDto);
             this.messages.push(message);
 
             if (this.onNewMessageCallback) {
@@ -152,19 +144,6 @@ export class ChatService {
                 this.onErrorCallback(error);
             }
         });
-    }
-
-    /**
-     * Convertit un DTO en modèle Message
-     */
-    private convertDtoToMessage(dto: MessageResponseDto): Message {
-        return new Message(
-            dto.id,
-            dto.pseudo,
-            dto.message,
-            dto.timestamp ? new Date(dto.timestamp) : new Date(),
-            dto.userId
-        );
     }
 
     /**
