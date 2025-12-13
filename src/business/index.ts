@@ -7,9 +7,9 @@ export * from './dtos/AuthDto.js';
 export * from './dtos/MessageDto.js';
 
 // Export all models
-export { User } from './models/User.js';
 export { Message } from './models/Message.js';
 
 // Export all mappers
 export { MessageMapper } from './mappers/MessageMapper.js';
 
+export { AuthService } from './services/AuthService.js';

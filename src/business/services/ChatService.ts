@@ -1,9 +1,7 @@
 import { Message } from '../models/Message.js';
-import { User } from '../models/User.js';
 import { MessageResponseDto, SendMessageDto } from '../dtos/MessageDto.js';
-import { LoginDto } from '../dtos/AuthDto.js';
 import { WebSocketService } from './WebSocketService.js';
-import { MessageMapper } from '../mappers/MessageMapper.js';
+import { MessageMapper } from '../mappers';
 
 /**
  * Chat Service
@@ -11,7 +9,6 @@ import { MessageMapper } from '../mappers/MessageMapper.js';
  */
 export class ChatService {
     private webSocketService: WebSocketService;
-    private currentUser: User | null = null;
     private messages: Message[] = [];
 
     // Callbacks pour l'UI
@@ -27,19 +24,14 @@ export class ChatService {
     /**
      * Connecte l'utilisateur au chat
      */
-    public async login(accessToken: string, pseudo: string): Promise<void> {
+    public async login(accessToken: string): Promise<void> {
         try {
-            const loginDto: LoginDto = {
-                accessToken,
-                pseudo
-            };
 
             await this.webSocketService.connect(loginDto);
 
-            // Crée l'utilisateur actuel
             this.currentUser = new User(
                 this.generateUserId(),
-                pseudo,
+                'User', // Pseudo par défaut, l'identité réelle est dans le JWT
                 accessToken
             );
 
@@ -65,7 +57,6 @@ export class ChatService {
         }
 
         const messageDto: SendMessageDto = {
-            pseudo: this.currentUser.pseudo,
             message: content
         };
 
